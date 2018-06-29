@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CECF020B20E61B5A0013492C /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF020A20E61B5A0013492C /* File.swift */; };
 		CEF0125B20E4D30600301259 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0125A20E4D30600301259 /* AppDelegate.swift */; };
 		CEF0125F20E4D30600301259 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = CEF0125E20E4D30600301259 /* Actions.sks */; };
 		CEF0126120E4D30600301259 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF0126020E4D30600301259 /* GameScene.swift */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CECF020A20E61B5A0013492C /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		CEF0125720E4D30600301259 /* GamePlactice2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GamePlactice2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEF0125A20E4D30600301259 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CEF0125E20E4D30600301259 /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
@@ -61,6 +63,7 @@
 				CEF0125A20E4D30600301259 /* AppDelegate.swift */,
 				CEF0125E20E4D30600301259 /* Actions.sks */,
 				CEF0126020E4D30600301259 /* GameScene.swift */,
+				CECF020A20E61B5A0013492C /* File.swift */,
 				CEF0126220E4D30600301259 /* GameViewController.swift */,
 				CEF0126420E4D30600301259 /* Main.storyboard */,
 				CEF0126720E4D30900301259 /* Assets.xcassets */,
@@ -143,6 +146,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEF0126120E4D30600301259 /* GameScene.swift in Sources */,
+				CECF020B20E61B5A0013492C /* File.swift in Sources */,
 				CEF0126320E4D30600301259 /* GameViewController.swift in Sources */,
 				CEF0125B20E4D30600301259 /* AppDelegate.swift in Sources */,
 			);

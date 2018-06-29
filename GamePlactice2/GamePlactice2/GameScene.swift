@@ -5,6 +5,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let atackFinger = SKSpriteNode(imageNamed: "finger")
     let noseMonster = SKSpriteNode(imageNamed: "nose")
    
+    var countDoun = 30
+    var noseDestroyed = 10
     
     
     enum PhysicsCategory {
@@ -18,6 +20,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         backgroundColor = SKColor.white
         self.addFinger()
         self.addNoseMonster()
+        
         
         physicsWorld.gravity = CGVector.zero
         physicsWorld.contactDelegate = self
@@ -56,7 +59,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let actualDuration = CGFloat(1.8)
         let actionMove1 = SKAction.moveTo(x: size.width * 0.9, duration: TimeInterval(actualDuration))
         let actionMove2 = SKAction.moveTo(x: size.width * 0.1, duration: TimeInterval(actualDuration))
-        noseMonster.run(SKAction.repeatForever(SKAction.sequence([actionMove1, actionMove2])))
+       
+        // noseMonster.run(SKAction.repeatForever(SKAction.sequence([actionMove1, actionMove2])))
+        let loseAction = SKAction.run() {
+            let reveal =
+                SKTransition.flipHorizontal(withDuration: 0.5)
+            let gameOverScene =
+                GameOverScene(size: self.size, won: false)
+            self.view?.presentScene(gameOverScene,
+                                    transition: reveal)
+        }
+        noseMonster.run(SKAction.sequence([actionMove1, actionMove2, actionMove1, actionMove2, actionMove1, actionMove2, actionMove1, actionMove2, actionMove1, actionMove2,  actionMove1, actionMove2, actionMove1, actionMove2, actionMove1, actionMove2, actionMove1, actionMove2, actionMove1, actionMove2, actionMove1, actionMove2,actionMove1, actionMove2, actionMove1, actionMove2, actionMove1, actionMove2, loseAction]))
     }
     
     func addAtackFinger() {
@@ -91,19 +104,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     func fingerDidCollideWithNose(finger: SKSpriteNode,
                                          nose: SKSpriteNode) {
+        noseDestroyed -= 1
+        if (noseDestroyed == 0) {
+            let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
+            let gameOverScene = GameOverScene(size: self.size, won: true)
+            self.view?.presentScene(gameOverScene, transition: reveal)
+        }
+        
         print("Hit")
+        print(noseDestroyed)
         efect()
+    }
+    
+    func timer() {
+        let timerLavel = SKLabelNode(fontNamed: "Copperplate-Light")
+        let deleteTimer = SKAction.removeFromParent()
+        let actionTimer = SKAction.wait(forDuration: 1)
+        
+        
+        timerLavel.text = "\(noseDestroyed)"
+        timerLavel.fontSize = 60
+        if countDoun > 15 {
+            timerLavel.fontColor = SKColor.black
+        } else {
+            timerLavel.fontColor = SKColor.red
+        }
+        timerLavel.position = CGPoint(x: size.width * 0.9, y: size.height * 0.9)
+        addChild(timerLavel)
+        timerLavel.run(SKAction.sequence([actionTimer, deleteTimer]))
     }
 
     func efect() {
         let burn = SKSpriteNode(imageNamed: "burn")
         burn.position = noseMonster.position
         let burnIn = SKAction.fadeIn(withDuration: TimeInterval(1))
-        
         let burnOut = SKAction.fadeOut(withDuration: TimeInterval(1))
         burn.run(SKAction.sequence([burnIn,burnOut]))
         
         self.addChild(burn)
+        self.timer()
     }
     
 }
