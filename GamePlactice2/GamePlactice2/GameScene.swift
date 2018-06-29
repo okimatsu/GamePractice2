@@ -1,89 +1,109 @@
-//
-//  GameScene.swift
-//  GamePlactice2
-//
-//  Created by user on 2018/06/28.
-//  Copyright © 2018年 user. All rights reserved.
-//
-
 import SpriteKit
-import GameplayKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
+    let finger = SKSpriteNode(imageNamed: "finger")
+    let atackFinger = SKSpriteNode(imageNamed: "finger")
+    let noseMonster = SKSpriteNode(imageNamed: "nose")
+   
     
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
+    
+    enum PhysicsCategory {
+        static let none : UInt32 = 0
+        static let all : UInt32 = UInt32.max
+        static let nose : UInt32 = 0b1
+        static let finger : UInt32 = 0b10
+    }
     
     override func didMove(to view: SKView) {
+        backgroundColor = SKColor.white
+        self.addFinger()
+        self.addNoseMonster()
         
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
-        }
+        physicsWorld.gravity = CGVector.zero
+        physicsWorld.contactDelegate = self
+    }
+    
+    
+    
+    
+    func addFinger() {
+        finger.position = CGPoint(x: size.width/2, y: size.height * 0.1)
+        finger.size = CGSize(width: 80, height: 160)
+        self.addChild(finger)
         
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
+        let actualDuration = CGFloat(1.2)
+        let actionMove1 = SKAction.moveTo(x: size.width * 0.9, duration: TimeInterval(actualDuration))
+        let actionMove2 = SKAction.moveTo(x: size.width * 0.1, duration: TimeInterval(actualDuration))
+        finger.run(SKAction.repeatForever(SKAction.sequence([actionMove2,actionMove1])))
+        finger.physicsBody = SKPhysicsBody(rectangleOf: finger.size)
+        finger.physicsBody?.categoryBitMask = PhysicsCategory.finger
+        finger.physicsBody?.contactTestBitMask = PhysicsCategory.nose
+        finger.physicsBody?.collisionBitMask = PhysicsCategory.none
+        finger.physicsBody?.usesPreciseCollisionDetection = true
+    }
+    
+    
+    func addNoseMonster() {
+        noseMonster.size = CGSize(width: 100, height: 100)
+        noseMonster.position = CGPoint(x: size.width * 0.1, y: size.height * 0.9)
+        addChild(noseMonster)
         
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
-    }
-    
-    
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
-        }
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-        }
+        noseMonster.physicsBody = SKPhysicsBody(rectangleOf: noseMonster.size)
+        noseMonster.physicsBody?.categoryBitMask = PhysicsCategory.nose
+        noseMonster.physicsBody?.collisionBitMask = PhysicsCategory.none
         
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
+        
+        let actualDuration = CGFloat(1.8)
+        let actionMove1 = SKAction.moveTo(x: size.width * 0.9, duration: TimeInterval(actualDuration))
+        let actionMove2 = SKAction.moveTo(x: size.width * 0.1, duration: TimeInterval(actualDuration))
+        noseMonster.run(SKAction.repeatForever(SKAction.sequence([actionMove1, actionMove2])))
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
+    func addAtackFinger() {
+       /* atackFinger.size = CGSize(width: 100, height: 180)
+        atackFinger.position = finger.position
+        addChild(atackFinger) */
+        let atackMove = SKAction.moveTo(y: size.height * 0.8, duration: TimeInterval(1.2))
+       // let atackMoveDone = SKAction.removeFromParent()
+        let backMove = SKAction.moveTo(y: size.height * 0.1, duration: TimeInterval(1))
+        
+        
+        finger.run(SKAction.sequence([atackMove, backMove]))
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
+        addAtackFinger()
     }
     
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
+    func didBegin(_ contact: SKPhysicsContact) {
+        var firstBody: SKPhysicsBody
+        var secondBody: SKPhysicsBody
+        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+            firstBody = contact.bodyA
+            secondBody = contact.bodyB
+        } else {
+            firstBody = contact.bodyB
+            secondBody = contact.bodyA
+        }
+        if((firstBody.categoryBitMask & PhysicsCategory.nose != 0) && (secondBody.categoryBitMask & PhysicsCategory.finger != 0)) {
+            fingerDidCollideWithNose(finger: firstBody.node as! SKSpriteNode, nose: secondBody.node as! SKSpriteNode)
+        }
+    }
+    func fingerDidCollideWithNose(finger: SKSpriteNode,
+                                         nose: SKSpriteNode) {
+        print("Hit")
+        efect()
+    }
+
+    func efect() {
+        let burn = SKSpriteNode(imageNamed: "burn")
+        burn.position = noseMonster.position
+        let burnIn = SKAction.fadeIn(withDuration: TimeInterval(1))
+        
+        let burnOut = SKAction.fadeOut(withDuration: TimeInterval(1))
+        burn.run(SKAction.sequence([burnIn,burnOut]))
+        
+        self.addChild(burn)
     }
     
-    
-    override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
-    }
 }
